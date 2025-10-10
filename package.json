@@ -1,35 +1,21 @@
 {
-  "name": "vending-backend",
+  "name": "medicine-vending-backend",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "axios": "^1.12.2",
-    "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.2",
+    "axios": "^1.6.8",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^17.2.3",
     "express": "^4.21.2",
-    "mongoose": "^7.5.0",
+    "mongoose": "^8.19.1",
     "razorpay": "^2.9.6",
-    "uuid": "^9.0.0"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  },
-  "description": "",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Adarsh1945/Medicine-Backend-Store.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Adarsh1945/Medicine-Backend-Store/issues"
-  },
-  "homepage": "https://github.com/Adarsh1945/Medicine-Backend-Store#readme"
+  }
 }
