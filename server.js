@@ -57,18 +57,6 @@ app.post('/verify-payment', async (req, res) => {
     if (generated_signature !== signature) {
       return res.status(400).send('Invalid signature');
     }
-// after verifying Razorpay signature successfully
-const axios = require("axios");
-
-const MCU_IP = "http://10.245.115.68"; // local MCU IP
-const DISPENSE_URL = `${MCU_IP}/dispense?slot=${slot}`;
-
-try {
-  await axios.get(DISPENSE_URL);
-  console.log("Dispense command sent successfully");
-} catch (err) {
-  console.error("Failed to contact MCU:", err.message);
-}
 
     // Payment verified. Decide slot (map productId -> slot index)
     const slot = parseInt(productId) || 1;
