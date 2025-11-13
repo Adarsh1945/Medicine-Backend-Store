@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "name": "medicine-vending-backend",
   "version": "1.0.0",
   "main": "server.js",
@@ -19,17 +20,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  },
-  "description": "",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Adarsh1945/Medicine-Backend-Store.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Adarsh1945/Medicine-Backend-Store/issues"
-  },
-  "homepage": "https://github.com/Adarsh1945/Medicine-Backend-Store#readme"
+  }
 }
