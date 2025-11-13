@@ -13,12 +13,12 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const RZP_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_RRnoqnjGIdpuvd';
 const RZP_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'hWqKxuJK1Ym9342ZkOmHHq8G';
-const MICRO_IP = process.env.MICRO_IP || '10.245.115.68';
+const MICRO_IP = process.env.MICRO_IP || '10.228.152.68';
 // Root endpoint for health check or basic info
 app.get('/', (req, res) => {
   res.send('Medicine Backend Store API is running');
 });
-const MICRO_ENDPOINT = `http://10.245.115.68/dispense`; // backend won't call MCU if not reachable
+const MICRO_ENDPOINT = `http://10.228.152.68/dispense`; // backend won't call MCU if not reachable
 
 const razorpay = new Razorpay({
   key_id: RZP_KEY_ID,
