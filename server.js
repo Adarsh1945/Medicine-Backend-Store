@@ -53,7 +53,7 @@ app.post('/create-order', async (req, res) => {
 // VERIFY Payment & Update Stock
 app.post('/verify-payment', (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, productId } = req.body;
-  const secret = 'YOUR_RAZORPAY_KEY_SECRET';
+  const secret = 'hWqKxuJK1Ym9342ZkOmHHq8G';
 
   const generated_signature = crypto.createHmac('sha256', secret)
     .update(razorpay_order_id + "|" + razorpay_payment_id).digest('hex');
@@ -68,4 +68,9 @@ app.post('/verify-payment', (req, res) => {
   res.status(400).send("Verification failed");
 });
 
-app.listen(3000, () => console.log("Backend running on port 3000"));
+// Change this part in your server.js
+const PORT = process.env.PORT || 3000; 
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+});
