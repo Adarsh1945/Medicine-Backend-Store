@@ -10,8 +10,9 @@
     "axios": "^1.12.2",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
-    "express": "^4.21.2",
+    "express": "^4.22.1",
     "ll": "^1.2.0",
     "mongoose": "^8.19.1",
     "ngrok": "^5.0.0-beta.2",
@@ -20,5 +21,17 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adarsh1945/Medicine-Backend-Store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Adarsh1945/Medicine-Backend-Store/issues"
+  },
+  "homepage": "https://github.com/Adarsh1945/Medicine-Backend-Store#readme"
 }
