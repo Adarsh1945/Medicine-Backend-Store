@@ -47,7 +47,16 @@ app.get('/', (req, res) => {
 // GET STOCK - for frontend display
 // ============================
 app.get('/stock', (req, res) => {
-  res.json(medicines);
+  // return only stock info + names
+  const stockInfo = {};
+  for (const id in medicines) {
+    stockInfo[id] = {
+      name_en: medicines[id].name_en,
+      name_kn: medicines[id].name_kn,
+      stock: medicines[id].stock
+    };
+  }
+  res.json(stockInfo);
 });
 
 // ============================
@@ -89,7 +98,7 @@ app.post('/verify-payment', async (req, res) => {
     }
 
     if (medicine.stock <= 0) {
-      return res.status(400).send(`${medicine.name} is out of stock`);
+      return res.status(400).send(`${medicine.name_en} is out of stock`);
     }
 
     // verify Razorpay signature
@@ -100,11 +109,10 @@ app.post('/verify-payment', async (req, res) => {
       return res.status(400).send('Invalid signature');
     }
 
-    // Payment verified and stock available
-    // Reduce stock
-    medicine.stock -= 1;
+    // ✅ Payment verified and stock available
+    medicine.stock -= 1; // Reduce stock
 
-    // Call MCU to dispense (optional)
+    // Optional: Call MCU to dispense (frontend already calls MCU)
     const slot = medicine.slot;
     try {
       await axios.get(`${MICRO_ENDPOINT}?slot=${slot}`, { timeout: 3000 });
@@ -113,7 +121,7 @@ app.post('/verify-payment', async (req, res) => {
       console.warn('Server could not call MCU (likely network). Frontend should call MCU instead.');
     }
 
-    // respond with success, updated stock
+    // Respond with success + current stock so frontend can refresh
     res.json({ success: true, slot, remainingStock: medicine.stock });
 
   } catch (err) {
