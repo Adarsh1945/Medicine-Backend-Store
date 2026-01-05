@@ -15,10 +15,10 @@ app.use(express.json());
 // TEMPORARY IN-MEMORY STOCK
 // ============================
 let medicines = {
-  1: { name: "Dolo 65", stock: 10, slot: 1 },
-  2: { name: "Paracetamol", stock: 10, slot: 2 },
-  3: { name: "Cheston Cold", stock: 10, slot: 3 },
-  4: { name: "Digene", stock: 10, slot: 4 }
+  1: { name_en: "Dolo 65", name_kn: "ಡೋಲೋ 65", stock: 10, slot: 1 },
+  2: { name_en: "Paracetamol", name_kn: "ಪ್ಯಾರಾಸಿಟಮಾಲ್", stock: 10, slot: 2 },
+  3: { name_en: "Cheston Cold", name_kn: "ಚೆಸ್ಟನ್ ಕೋಲ್ಡ್", stock: 10, slot: 3 },
+  4: { name_en: "Digene", name_kn: "ಡೈಜಿನ್", stock: 10, slot: 4 }
 };
 
 // ============================
@@ -27,7 +27,7 @@ let medicines = {
 const PORT = process.env.PORT || 3000;
 const RZP_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_RRnoqnjGIdpuvd';
 const RZP_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'hWqKxuJK1Ym9342ZkOmHHq8G';
-const MICRO_IP = process.env.MICRO_IP || '10.32.235.68';
+const MICRO_IP = process.env.MICRO_IP || '10.42.53.68';
 const MICRO_ENDPOINT = `http://${MICRO_IP}/dispense`;
 
 // Razorpay instance
