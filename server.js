@@ -12,8 +12,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-const RZP_KEY_ID = process.env.RAZORPAY_KEY_ID;
-const RZP_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+const RZP_KEY_ID = rzp_test_RRnoqnjGIdpuvd;
+const RZP_KEY_SECRET = hWqKxuJK1Ym9342ZkOmHHq8G;
 
 const MICRO_IP = process.env.MICRO_IP || "10.42.53.68 ";
 const MICRO_ENDPOINT = `http://${MICRO_IP}/dispense`;
