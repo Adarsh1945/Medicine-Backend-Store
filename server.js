@@ -1,11 +1,12 @@
 // server.js (Medicine Vending Machine Backend)
-// npm i express cors body-parser razorpay crypto axios
+// npm i express cors body-parser razorpay crypto axios ws
 
 const express = require('express');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const cors = require('cors');
 const axios = require('axios');
+const WebSocket = require('ws');
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ let medicines = {
 // CONFIG
 // ============================
 const PORT = process.env.PORT || 3000;
+const WS_PORT = process.env.WS_PORT || 3001;
 const RZP_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_RRnoqnjGIdpuvd';
 const RZP_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'hWqKxuJK1Ym9342ZkOmHHq8G';
 const MICRO_IP = process.env.MICRO_IP || '10.42.53.68';
@@ -37,6 +39,30 @@ const razorpay = new Razorpay({
 });
 
 // ============================
+// WEBSOCKET SETUP
+// ============================
+const wss = new WebSocket.Server({ port: WS_PORT });
+console.log(`WebSocket server running on ws://localhost:${WS_PORT}`);
+
+// Broadcast stock update to all connected clients
+function broadcastStock() {
+  const stockInfo = {};
+  for (const id in medicines) {
+    stockInfo[id] = {
+      name_en: medicines[id].name_en,
+      name_kn: medicines[id].name_kn,
+      stock: medicines[id].stock
+    };
+  }
+  const data = JSON.stringify({ type: 'stockUpdate', stock: stockInfo });
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(data);
+    }
+  });
+}
+
+// ============================
 // ROOT ENDPOINT
 // ============================
 app.get('/', (req, res) => {
@@ -47,7 +73,6 @@ app.get('/', (req, res) => {
 // GET STOCK - for frontend display
 // ============================
 app.get('/stock', (req, res) => {
-  // return only stock info + names
   const stockInfo = {};
   for (const id in medicines) {
     stockInfo[id] = {
@@ -74,7 +99,6 @@ app.post('/create-order', async (req, res) => {
       notes: notes || {}
     });
 
-    // Return order id + key_id so frontend can open checkout
     res.json({ id: order.id, amount: order.amount, currency: order.currency, key_id: RZP_KEY_ID });
   } catch (err) {
     console.error(err);
@@ -93,35 +117,30 @@ app.post('/verify-payment', async (req, res) => {
     }
 
     const medicine = medicines[productId];
-    if (!medicine) {
-      return res.status(400).send('Invalid product ID');
-    }
-
-    if (medicine.stock <= 0) {
-      return res.status(400).send(`${medicine.name_en} is out of stock`);
-    }
+    if (!medicine) return res.status(400).send('Invalid product ID');
+    if (medicine.stock <= 0) return res.status(400).send(`${medicine.name_en} is out of stock`);
 
     // verify Razorpay signature
     const generated_signature = crypto.createHmac('sha256', RZP_KEY_SECRET)
       .update(order_id + '|' + payment_id).digest('hex');
 
-    if (generated_signature !== signature) {
-      return res.status(400).send('Invalid signature');
-    }
+    if (generated_signature !== signature) return res.status(400).send('Invalid signature');
 
-    // ✅ Payment verified and stock available
-    medicine.stock -= 1; // Reduce stock
+    // Payment verified -> reduce stock
+    medicine.stock -= 1;
 
-    // Optional: Call MCU to dispense (frontend already calls MCU)
+    // Broadcast stock update to all frontends
+    broadcastStock();
+
+    // Call MCU (optional)
     const slot = medicine.slot;
     try {
       await axios.get(`${MICRO_ENDPOINT}?slot=${slot}`, { timeout: 3000 });
-      console.log('MCU dispense called from server for slot', slot);
+      console.log('MCU dispense called for slot', slot);
     } catch (mcErr) {
-      console.warn('Server could not call MCU (likely network). Frontend should call MCU instead.');
+      console.warn('Server could not call MCU (likely network). Frontend calls MCU instead.');
     }
 
-    // Respond with success + current stock so frontend can refresh
     res.json({ success: true, slot, remainingStock: medicine.stock });
 
   } catch (err) {
@@ -131,8 +150,21 @@ app.post('/verify-payment', async (req, res) => {
 });
 
 // ============================
+// REFILL API (admin can add stock)
+// ============================
+app.post('/refill', (req, res) => {
+  const { productId, quantity } = req.body;
+  if (!medicines[productId]) return res.status(400).send('Invalid product');
+  medicines[productId].stock += quantity;
+
+  // Broadcast updated stock
+  broadcastStock();
+  res.json({ success: true, stock: medicines[productId].stock });
+});
+
+// ============================
 // START SERVER
 // ============================
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`HTTP server running at http://localhost:${PORT}`);
 });
