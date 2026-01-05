@@ -7,7 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- INVENTORY DATABASE ---
+// ====== INVENTORY DATABASE ======
+// Matches your 4 slots on the NodeMCU
 let inventory = [
   { id: 1, name: "Dolo 650", price: 25, stock: 10, slot: 1, purpose_en: "Fever & Body Pain", purpose_kn: "ಜ್ವರ ಮತ್ತು ಮೈ ಕೈ ನೋವು" },
   { id: 2, name: "Paracetamol", price: 25, stock: 10, slot: 2, purpose_en: "Headache & Mild Fever", purpose_kn: "ತಲೆನೋವು ಮತ್ತು ಸಾಮಾನ್ಯ ಜ್ವರ" },
@@ -20,6 +21,7 @@ const rzp = new Razorpay({
   key_secret: 'hWqKxuJK1Ym9342ZkOmHHq8G' 
 });
 
+// Routes
 app.get('/inventory', (req, res) => res.json(inventory));
 
 app.post('/refill', (req, res) => {
@@ -57,15 +59,15 @@ app.post('/verify-payment', (req, res) => {
   if (generated_signature === razorpay_signature) {
     const item = inventory.find(i => i.id === parseInt(productId));
     if (item && item.stock > 0) {
-      item.stock -= 1;
+      item.stock -= 1; // Update stock in backend
       return res.json({ success: true, slot: item.slot });
     }
   }
   res.status(400).send("Verification failed");
 });
 
-// FIXED FOR RENDER: Listen on process.env.PORT and 0.0.0.0
-const PORT = process.env.PORT || 3000;
+// ====== RENDER PORT FIX ======
+const PORT = process.env.PORT || 3000; 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is live and listening on port ${PORT}`);
+    console.log(`Backend live on port ${PORT}`);
 });
