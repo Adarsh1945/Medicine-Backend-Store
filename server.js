@@ -1,3 +1,4 @@
+const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
@@ -29,31 +30,24 @@ app.post("/create-order", async (req, res) => {
 });
 
 /* ================= VERIFY PAYMENT ================= */
-app.post("/verify-payment", (req, res) => {
-  const { payment_id, order_id, signature, productId } = req.body;
+// Reduce stock
+medicines[productId].stock -= 1;
 
-  const body = order_id + "|" + payment_id;
-  const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-    .update(body)
-    .digest("hex");
+// ---- CALL ESP8266 FROM BACKEND ----
+const espIp = "192.168.1.105"; // YOUR ESP IP
+const slot = medicines[productId].slot;
 
-  if (expectedSignature !== signature) {
-    return res.status(400).json({ error: "Invalid payment" });
-  }
-
-  if (medicines[productId].stock <= 0) {
-    return res.status(400).json({ error: "Out of stock" });
-  }
-
-  medicines[productId].stock -= 1;
-
-  res.json({
-    success: true,
-    slot: medicines[productId].slot
-  });
+http.get(`http://${espIp}/dispense?slot=${slot}`, (resp) => {
+  console.log("ESP8266 dispense triggered");
+}).on("error", (err) => {
+  console.error("ESP8266 not reachable");
 });
 
+res.json({
+  success: true,
+  message: "Payment verified, dispensing triggered",
+  slot
+});
 /* ================= ADMIN REFILL ================= */
 app.post("/admin/refill", (req, res) => {
   const { productId, quantity } = req.body;
