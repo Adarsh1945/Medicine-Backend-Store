@@ -4,6 +4,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const cors = require('cors');
 const axios = require('axios');
+const WebSocket = require('ws');
 
 const app = express();
 app.use(cors());
@@ -32,18 +33,27 @@ const MICRO_ENDPOINT = `http://${MICRO_IP}/dispense`;
 const razorpay = new Razorpay({ key_id: RZP_KEY_ID, key_secret: RZP_KEY_SECRET });
 
 // ============================
-// ROOT ENDPOINT
+// WEBSOCKET SERVER
+// ============================
+const wss = new WebSocket.Server({ port: 3001 });
+console.log('WebSocket server running on ws://localhost:3001');
+
+function broadcastStock() {
+  const msg = JSON.stringify({ type: 'stockUpdate', stock: medicines });
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) client.send(msg);
+  });
+}
+
+// ============================
+// ROUTES
 // ============================
 app.get('/', (req, res) => res.send('Medicine Backend API is running'));
 
-// ============================
 // GET STOCK
-// ============================
 app.get('/stock', (req, res) => res.json(medicines));
 
-// ============================
 // CREATE ORDER
-// ============================
 app.post('/create-order', async (req, res) => {
   try {
     const { amount, currency = 'INR', receipt, notes } = req.body;
@@ -63,9 +73,7 @@ app.post('/create-order', async (req, res) => {
   }
 });
 
-// ============================
 // VERIFY PAYMENT & DISPENSE
-// ============================
 app.post('/verify-payment', async (req, res) => {
   try {
     const { payment_id, order_id, signature, productId } = req.body;
@@ -94,7 +102,9 @@ app.post('/verify-payment', async (req, res) => {
       console.warn('MCU dispense failed:', mcErr.message);
     }
 
-    // Return updated stock
+    // Broadcast stock to all clients
+    broadcastStock();
+
     res.json({ success: true, slot, remainingStock: medicine.stock });
   } catch (err) {
     console.error(err);
@@ -102,9 +112,7 @@ app.post('/verify-payment', async (req, res) => {
   }
 });
 
-// ============================
 // ADMIN REFILL API
-// ============================
 app.post('/admin/refill', (req, res) => {
   const { productId, quantity } = req.body;
   if (!productId || typeof quantity !== 'number' || quantity <= 0) {
@@ -115,11 +123,11 @@ app.post('/admin/refill', (req, res) => {
 
   medicines[productId].stock += quantity;
 
-  // Optional: return updated stock
+  // Broadcast updated stock
+  broadcastStock();
+
   res.json({ success: true, productId, newStock: medicines[productId].stock });
 });
 
-// ============================
 // START SERVER
-// ============================
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
