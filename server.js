@@ -16,10 +16,10 @@ app.use(express.json());
 // TEMPORARY IN-MEMORY STOCK
 // ============================
 let medicines = {
-  1: { name_en: "Dolo 65", name_kn: "ಡೋಲೋ 65", stock: 10, slot: 1 },
-  2: { name_en: "Paracetamol", name_kn: "ಪ್ಯಾರಾಸಿಟಮಾಲ್", stock: 10, slot: 2 },
-  3: { name_en: "Cheston Cold", name_kn: "ಚೆಸ್ಟನ್ ಕೋಲ್ಡ್", stock: 10, slot: 3 },
-  4: { name_en: "Digene", name_kn: "ಡೈಜಿನ್", stock: 10, slot: 4 }
+  1: { name_en: "Dolo 65", name_kn: "ಡೋಲೋ 65", stock: 5, slot: 1 },
+  2: { name_en: "Paracetamol", name_kn: "ಪ್ಯಾರಾಸಿಟಮಾಲ್", stock: 5, slot: 2 },
+  3: { name_en: "Cheston Cold", name_kn: "ಚೆಸ್ಟನ್ ಕೋಲ್ಡ್", stock: 5, slot: 3 },
+  4: { name_en: "Digene", name_kn: "ಡೈಜಿನ್", stock: 5, slot: 4 }
 };
 
 // ============================
