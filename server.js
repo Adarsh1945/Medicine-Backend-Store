@@ -17,8 +17,8 @@ let inventory = [
 ];
 
 const rzp = new Razorpay({
-  key_id: 'rzp_test_RRnoqnjGIdpuvd', 
-  key_secret: 'hWqKxuJK1Ym9342ZkOmHHq8G' 
+  key_id: 'rzp_test_Si5g2t7SrM6JG4', 
+  key_secret: 'LyADvF9pnDl4Haprl4Ta0AG4' 
 });
 
 // Routes
