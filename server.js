@@ -51,7 +51,7 @@ app.post('/create-order', async (req, res) => {
 
 app.post('/verify-payment', (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, productId } = req.body;
-  const secret = 'hWqKxuJK1Ym9342ZkOmHHq8G';
+  const secret = 'LyADvF9pnDl4Haprl4Ta0AG4';
 
   const generated_signature = crypto.createHmac('sha256', secret)
     .update(razorpay_order_id + "|" + razorpay_payment_id).digest('hex');
